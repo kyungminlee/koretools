@@ -4,13 +4,12 @@
 #include <iostream>
 #include <boost/utility.hpp>
 
-#include "bitbox.h"
-
 #define BOOST_TEST_DYN_LINK
-//#define BOOST_TEST_MAIN
 #define BOOST_TEST_MODULE BitboxTest
 
 #include <boost/test/unit_test.hpp>
+
+#include "bitbox.h"
 
 BOOST_AUTO_TEST_CASE(simpler)
 {
@@ -40,18 +39,17 @@ BOOST_AUTO_TEST_CASE(naiveTest)
   for (int i = 0 ; i < 1024 ; ++i) {
     uint64_t v = rangen();
     uint64_t m = rangen();
-    BOOST_CHECK(bitcount(v,m)       == kore::bitbox::naive::bitcount(v,m));
-    BOOST_CHECK(bitwsum(v,m)        == kore::bitbox::naive::bitwsum(v,m));
-    BOOST_CHECK(bitcompress(v,m)    == kore::bitbox::naive::bitcompress(v,m));
-    BOOST_CHECK(bitexpand(v,m)      == kore::bitbox::naive::bitexpand(v,m));
-    BOOST_CHECK(partitioncount(v,m) == kore::bitbox::naive::partitioncount(v,m));
+    BOOST_CHECK_EQUAL(bitcount(v,m)      , kore::bitbox::naive::bitcount(v,m)      );
+    BOOST_CHECK_EQUAL(bitwsum(v,m)       , kore::bitbox::naive::bitwsum(v,m)       );
+    BOOST_CHECK_EQUAL(bitcompress(v,m)   , kore::bitbox::naive::bitcompress(v,m)   );
+    BOOST_CHECK_EQUAL(bitexpand(v,m)     , kore::bitbox::naive::bitexpand(v,m)     );
+    BOOST_CHECK_EQUAL(partitioncount(v,m), kore::bitbox::naive::partitioncount(v,m));
   }
 
   for (size_t f = 0 ; f < 64 ; ++f) {
     for (size_t l = 0 ; l < 64 ; ++l) {
-      uint64_t m1 = makemask<uint64_t>(f, l);
-      uint64_t m2 = kore::bitbox::naive::makemask<uint64_t>(f,l);
-      BOOST_CHECK(m1==m2);
+      BOOST_CHECK_EQUAL(makemask<uint64_t>(f, l),
+              kore::bitbox::naive::makemask<uint64_t>(f,l));
     }
   }
 }
