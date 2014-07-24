@@ -1,11 +1,18 @@
 #pragma once
-#include <cstdint>
-#include <cinttypes>
+#ifdef USE_TR1
+  #include <tr1/cstdint>
+  #include <tr1/cinttypes>
+  #include <tr1/type_traits>
+namespace std { using namespace tr1; };
+#else
+  #include <cstdint>
+  #include <cinttypes>
+  #include <type_traits>
+#endif
 #include <cassert>
 
 #include <complex>
 #include <limits>
-#include <type_traits>
 #include <stdexcept>
 #include <vector>
 #include <iterator>

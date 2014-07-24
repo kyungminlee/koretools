@@ -1,6 +1,10 @@
 #pragma once
 #include <exception>
-#include <unordered_map>
+#ifdef USE_TR1
+  #include <tr1/unordered_map>
+#else
+  #include <unordered_map>
+#endif
 #include "bitbox.h"
 
 namespace kore {
@@ -109,7 +113,11 @@ struct Dictionary
   size_t n()      const { return _n; }
   size_t length() const { return _n; }
   size_t size()   const { return _words.size(); }
+#ifdef __clang__
+  IndexType index(BitString w) const { return std::get<1>(*_indices.find(w)); }
+#else
   IndexType index(BitString w) const { return _indices.at(w); }
+#endif
   BitString word(size_t idx) const { return _words[idx]; }
   
   typename std::vector<BitString>::const_iterator begin()  const { return _words.begin(); }
