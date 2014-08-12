@@ -3,4 +3,5 @@
 #include "typedefs.h"
 #include "bitbox.h"
 #include "dictionary.h"
+#include "collector.h"
 #endif
