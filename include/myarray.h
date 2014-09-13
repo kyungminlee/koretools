@@ -30,5 +30,4 @@ private:
 	RawArray& _data;
 	std::array<size_t, Dim> _shape;
 	std::array<size_t, Dim+1> _bound;
-	
 };

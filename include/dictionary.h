@@ -1,4 +1,10 @@
 #pragma once
+
+// Binary string dictionary.
+//
+//
+
+
 #include <exception>
 #ifdef USE_TR1
   #include <tr1/unordered_map>
@@ -6,6 +12,8 @@
   #include <unordered_map>
 #endif
 #include "bitbox.h"
+
+
 
 namespace kore {
 namespace dictionary {

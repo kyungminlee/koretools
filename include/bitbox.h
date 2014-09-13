@@ -1,6 +1,12 @@
 #pragma once
 #include "typedefs.h"
 
+//
+// Collection of bit operations.
+//
+
+
+
 namespace kore {
 namespace bitbox {
 
