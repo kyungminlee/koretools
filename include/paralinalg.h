@@ -128,7 +128,7 @@ void eigh(SizeType n_item, SizeType n, Scalar* mats, RealScalar* eigvals, Scalar
     UnitEigenSolverWithEigenvector<Scalar, RealScalar, SizeType> rs(n, mats, eigvals, eigvecs);
     tbb::parallel_for(tbb::blocked_range<SizeType>(0, n_item), rs);
   } else {
-    UnitEigenSolver<Scalar, RealScalar, SizeType> rs(n, mats, eigvals, eigvecs);
+    UnitEigenSolver<Scalar, RealScalar, SizeType> rs(n, mats, eigvals);
     tbb::parallel_for(tbb::blocked_range<SizeType>(0, n_item), rs);
   }
 } // eigh
