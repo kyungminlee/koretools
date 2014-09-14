@@ -25,7 +25,7 @@ def eigh(c_np.ndarray in_mats not None, c_np.ndarray out_eigvals not None, c_np.
 
     if in_mats.ndim != out_eigvecs.ndim:
         raise TypeError("dimensions of in_mats and out_eigvecs should match.")
-    if in_mats.ndim != out_eigvals.ndim-1:
+    if in_mats.ndim != out_eigvals.ndim+1:
         raise TypeError("dimensions of in_mats and out_eigvals should match.")
 
     if in_mats.ndim < 2:
