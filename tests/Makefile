@@ -1,5 +1,13 @@
-CXXFLAGS = -g -O0 -Wall -std=c++11 -isystem ../include -isystem $(HOME)/.brew/include
-LDFLAGS = -L$(HOME)/.brew/lib -lboost_unit_test_framework
+include ./make.inc
 
-bitbox_test: bitbox.cc
-	clang++ $(CXXFLAGS) $(LDFLAGS) -o bitbox_test bitbox.cc 
+TARGETS = bitbox_test collector_test
+
+INCLUDE_FLAGS = $(foreach d, $(INCLUDE_PATHS), -isystem$d)
+LIBRARY_FLAGS = $(foreach d, $(LIBRARY_PATHS), -L$d) $(foreach l, $(LIBRARIES), -l$l)
+
+all: $(TARGETS)
+
+% : %.cc
+	$(CXX) $(CXXFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(LIBRARY_FLAGS) $< -o $@  
+clean :
+	rm -rf $(TARGETS) *.dSYM
