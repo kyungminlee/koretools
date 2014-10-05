@@ -1,13 +1,16 @@
-#ifndef _KORE_PARALINALG_H_
-#define _KORE_PARALINALG_H_
+#ifndef KORE_PARALINALG_H_
+#define KORE_PARALINALG_H_
 
 #include <tbb/tbb.h>
 #include <Eigen/Eigen>
+#include "typedefs.h"
 
 namespace kore {
 namespace paralinalg {
 
-
+// UnitTranspose
+//
+//
 template <typename Scalar, typename SizeType=size_t>
 struct UnitTranspose {
  public:
@@ -37,6 +40,45 @@ void transpose(SizeType n_item, SizeType n1, SizeType n2, Scalar* in, Scalar* ou
   tbb::parallel_for(tbb::blocked_range<SizeType>(0, n_item), rs);
 } // transpose
 
+
+// UnitDot
+//
+//
+//
+template <typename Scalar, typename SizeType=size_t>
+struct UnitDot {
+ public:
+  explicit UnitDot(SizeType n1, SizeType n2, SizeType n3, Scalar* in1, Scalar* in2, Scalar* out) :
+      _n1(n1), _n2(n2), _n3(n3), _in1(in1), _in2(in2), _out(out)  { }
+  explicit UnitDot(const UnitDot& s) : _n1(s._n1), _n2(s._n2), _n3(s._n3), _in1(s._in1), _in2(s._in2), _out(s._out) {  }
+  
+  void operator()(const tbb::blocked_range<SizeType>& range) const {
+    for (SizeType i = range.begin(); i < range.end(); ++i) {
+      Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+          map_in1(&_in1[_n1*_n2*i], _n1, _n2);
+      Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+          map_in2(&_in2[_n2*_n3*i], _n2, _n3);
+      Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+          map_out(&_out[_n1*_n3*i], _n1, _n3);
+      map_out = map_in1 * map_in2;
+    }
+  }
+ private:
+  SizeType _n1, _n2, _n3;
+  Scalar *_in1, *_in2, *_out;
+};
+
+template <typename Scalar, typename SizeType=size_t>
+void dot(SizeType n_item, SizeType n1, SizeType n2, SizeType n3, Scalar* in1, Scalar* in2, Scalar* out)
+{
+  UnitDot<Scalar, SizeType> rs(n1, n2, n3, in1, in2, out);
+  tbb::parallel_for(tbb::blocked_range<SizeType>(0, n_item), rs);
+} // dot
+
+
+// UnitInverse
+//
+//
 template <typename Scalar, typename SizeType=size_t>
 class UnitInverse {
  public:
@@ -68,6 +110,9 @@ void inverse(SizeType n_item, SizeType n, Scalar* in, Scalar* out)
 } // inv
 
 
+// UnitEigenSolverWithEigenvector
+//
+//
 template <typename Scalar, typename RealScalar,  typename SizeType=size_t>
 struct UnitEigenSolverWithEigenvector {
  public:
@@ -136,4 +181,4 @@ void eigh(SizeType n_item, SizeType n, Scalar* mats, RealScalar* eigvals, Scalar
 }
 
 
-#endif // _KORE_PARALINALG_H_
+#endif // KORE_PARALINALG_H_
