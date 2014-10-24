@@ -5,8 +5,6 @@
 // Collection of bit operations.
 //
 
-
-
 namespace kore {
 namespace bitbox {
 
@@ -45,7 +43,7 @@ template <typename BitString, typename ...Args> inline
 bool bitcheck(BitString value, size_t digit, Args ... args)
 {
   static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
-  return (value >> digit) & bitcheck(value, args);
+  return (value >> digit) & bitcheck(value, args...);
 }
 
 
@@ -60,7 +58,7 @@ BitString bitset(BitString value, size_t digit, bool bitvalue)
   return value;
 }
 
-template <>
+template <> inline
 size_t bitcount<uint64_t>(uint64_t val, uint64_t mask)
 {
   static const uint64_t S[] = {1, 2, 4, 8, 16, 32}; // Magic Binary Numbers
@@ -77,7 +75,7 @@ size_t bitcount<uint64_t>(uint64_t val, uint64_t mask)
   return (size_t) cnt;
 }
 
-template <>
+template <> inline
 size_t bitcount<uint32_t>(uint32_t val, uint32_t mask)
 {
   static const uint32_t S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
@@ -104,7 +102,7 @@ BitString makemask(size_t first, size_t last)
   return res;
 }
 
-template<typename BitString>
+template<typename BitString> inline
 size_t bitwsum(BitString val, BitString mask)
 {
   static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
@@ -120,7 +118,7 @@ size_t bitwsum(BitString val, BitString mask)
 }
 
 
-template<typename BitString>
+template<typename BitString> inline
 BitString bitcompress(BitString val, BitString mask)
 {
   static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
@@ -220,7 +218,7 @@ namespace naive
             return cnt;
         }
 
-    template<typename BitString>
+    template<typename BitString> inline
         size_t bitwsum(BitString val, BitString mask)
         {
             static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
@@ -232,7 +230,7 @@ namespace naive
             return sum;
         }
 
-    template<typename BitString>
+    template<typename BitString> inline
         BitString bitcompress(BitString val, BitString mask)
         {
             static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
