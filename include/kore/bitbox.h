@@ -41,6 +41,14 @@ bool bitcheck(BitString value, size_t digit)
   return (0x1 & (value >> digit) ) != 0x0;
 }
 
+template <typename BitString, typename ...Args> inline
+bool bitcheck(BitString value, size_t digit, Args ... args)
+{
+  static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
+  return (value >> digit) & bitcheck(value, args);
+}
+
+
 template <typename BitString> inline
 BitString bitset(BitString value, size_t digit, bool bitvalue)
 {
