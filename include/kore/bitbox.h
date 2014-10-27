@@ -172,19 +172,40 @@ template <typename BitString> inline
 size_t partitioncount(BitString val, BitString mask)
 {
   static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
+  static const BitString ZERO = 0x0, ONE = 0x1;
   BitString v = val, m = mask;
   size_t ones = 0, count = 0;
   while(v) {
-    if(0x1 & v) {
-      switch (0x1 & m) {
-        case 0x0: count += ones;  break;
-        case 0x1: ones++;  break;
+    if (ONE & v) {
+      switch (ONE & m) {
+        case ZERO: count += ones;  break;
+        case ONE: ones++;  break;
       }
     }
     v >>= 1;
     m >>= 1;
   } // i
   return count;
+}
+
+// TODO: Should be tested further
+template <typename BitString, typename SizeInt=ptrdiff_t> inline
+BitString bitrotate(BitString value, SizeInt step, BitString mask = ~(BitString(0)))
+{
+  static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
+
+  SizeInt mask_size = bitcount<BitString>(mask);
+  step = ((step % mask_size) + mask_size) % mask_size;
+
+  BitString unmasked_value = value & (~mask);
+  BitString value_compressed = bitcompress(value, mask);
+
+  BitString mask_compressed = makemask<BitString>(0, mask_size - 1);
+  BitString value_compressed_rotated = ((value_compressed << step) | (value_compressed >> (mask_size - step))) & mask_compressed;
+
+  BitString value_expanded = bitexpand(value_compressed_rotated, mask);
+  BitString result = unmasked_value | value_expanded;
+  return result;
 }
 
 

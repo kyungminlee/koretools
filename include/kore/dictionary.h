@@ -23,9 +23,9 @@ struct Generic
 {
   Generic() { }
   inline bool operator()(BitString w) { return true; }
-  inline bool operator==(const Generic & rhs) const { return true; }
-  inline bool operator<(const Generic &rhs) const { return false; }
-  inline bool operator>(const Generic &rhs) const { return false; }
+  //inline bool operator==(const Generic & rhs) const { return true; }
+  //inline bool operator<(const Generic &rhs) const { return false; }
+  //inline bool operator>(const Generic &rhs) const { return false; }
 };
 
 template <typename BitString>
@@ -34,9 +34,9 @@ struct Any
  public:
   Any() { }
   inline bool operator()(BitString w) { return true; }
-  inline bool operator==(const Any & rhs) const { return true; }
-  inline bool operator<(const Any &rhs) const { return false; }
-  inline bool operator>(const Any &rhs) const { return false; }
+  //inline bool operator==(const Any & rhs) const { return true; }
+  //inline bool operator<(const Any &rhs) const { return false; }
+  //inline bool operator>(const Any &rhs) const { return false; }
 };
 
 template <typename BitString>
@@ -49,9 +49,9 @@ struct FixedDensity : public Generic<BitString>
   }  
   inline bool operator()(BitString val) const { return (bitbox::bitcount(val) == _k); }
 
-  inline bool operator==(const FixedDensity & rhs) const { return (_k == rhs._k); }
-  inline bool operator<(const FixedDensity &rhs) const { return _k < rhs._k; }
-  inline bool operator>(const FixedDensity &rhs) const { return _k > rhs._k; }
+  //inline bool operator==(const FixedDensity & rhs) const { return (_k == rhs._k); }
+  //inline bool operator<(const FixedDensity &rhs) const { return _k < rhs._k; }
+  //inline bool operator>(const FixedDensity &rhs) const { return _k > rhs._k; }
  private:
   size_t _k;
 };
@@ -71,7 +71,7 @@ struct FixedDensityModulus : public Generic<BitString>
     return (bitbox::bitcount(val) == _k) && 
            ((bitbox::bitwsum(val) % _m) == (_r % _m));
   }
-
+#if 0
   inline bool operator==(const FixedDensityModulus & rhs) const {
     return (_k == rhs._k) && (_m == rhs._m) && (_r == rhs._r); 
   }
@@ -86,6 +86,7 @@ struct FixedDensityModulus : public Generic<BitString>
 	  return false;
 	}
   }
+#endif
  private:
   size_t _k, _m, _r;
 };
