@@ -8,13 +8,71 @@
 #include <kore/kore>
 //#include <kore/dictionary.h>
 
-#include "tuple_stream.h"
+namespace aux
+{
+  template<std::size_t...> struct seq {};
+
+  template<std::size_t N, std::size_t... Is>
+  struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
+
+  template<std::size_t... Is>
+  struct gen_seq<0, Is...> : seq<Is...>{};
+
+  template<class Ch, class Tr, class Tuple, std::size_t... Is>
+  void print_tuple(std::basic_ostream<Ch, Tr>& os, Tuple const& t, seq<Is...>){
+    using swallow = int[];
+    (void) swallow{0, (void(os << (Is == 0 ? "" : ", ") << std::get<Is>(t)), 0)...};
+  }
+} // aux::
+
+template<class Ch, class Tr, class... Args>
+auto operator<<(std::basic_ostream<Ch, Tr>& os, std::tuple<Args...> const& t)
+-> std::basic_ostream<Ch, Tr>&
+{
+  os << "(";
+  aux::print_tuple(os, t, aux::gen_seq<sizeof...(Args)>());
+  return os << ")";
+}
+
+template <typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr)
+{
+  os << "[";
+  for (size_t i = 0; i < N; ++i) {
+    os << arr[i] << ", ";
+  }
+  os << "]";
+  return os;
+}
+
+
+
 
 typedef kore::uint64_t BitString;
 typedef kore::int64_t Integer;
 using namespace kore::bitbox;
-const size_t BITSIZE = 32;
 
+#if 0
+struct FermionDictionary
+{
+  FermionDictionary(Integer nx, Integer ny)
+  : nx_(nx), ny_(ny)
+  {
+    Integer n = nx * ny;
+    BitString ONE = 0x1;
+    BitString val = 0;
+    while (!((ONE << n) & val)) {
+
+    }
+  }
+
+  std::tuple<BitString, Integer, Integer> reduce(BitString v)
+  {
+  }
+  Integer nx_, ny_;
+  //std::map < std::tuple<Integer, Integer>, std::map< std::tuple<BitString, Integer, Integer>, Integer> basis_to_index;
+};
+#endif
 
 template <size_t Dim>
 class BitShifter
@@ -43,6 +101,17 @@ public:
     //set_stride<Dim - 1>(1);
     mask_all_ = makemask<BitString>(0, size_ - 1);
   }
+
+#if 0
+  template <size_t Idx>
+  typename std::enable_if< (Idx < sizeof...(Args)), BitString>::type
+    shift_dim(BitString value, Args ... shift) const {
+      BitString mask = mask_[Idx];
+      for (size_t i = 0; i < std::get<Idx>(shape); ++i) {
+        mask << (std::get<Idx>(stride_))// LOOP OVER THE REST!
+      }
+    }
+#endif
 
 public:
   size_t size_;
@@ -165,7 +234,7 @@ public:
 class FermionTranslationDictionary1D
 {
 public:
-  FermionTranslationDictionary1D(size_t n) : length_(n), shifter_(n) {
+  FermionTranslationDictionary1D(size_t n) : size_(n), shifter_(n) {
     static const BitString ONE = 0x1;
     for (BitString word = 0x0; !(word & (ONE << n)); ++word) {
       auto parsed_word = parse(word);
@@ -183,7 +252,7 @@ public:
   {
     std::cout << "=== WORD ===" << std::endl;
     for (auto w : words_) {
-      std::cout << std::bitset<BITSIZE>(w) << std::endl;
+      std::cout << w << std::endl;
     }
     std::cout << "=== LENGTH ===" << std::endl;
     for (auto w : lengths_) {
@@ -192,19 +261,18 @@ public:
     std::cout << std::endl;
     std::cout << "=== INDEX ===" << std::endl;
     for (auto w : indices_) {
-      std::cout << std::bitset<BITSIZE>(w.first) << " : " << w.second << std::endl;
+      std::cout << w.first << " : " << w.second << std::endl;
     }
 
     std::cout << std::endl;
 
   }
-  
   std::tuple<BitString, Integer, Integer> parse(BitString v) const {
     Integer min_shift = 0;
     Integer shift;
     BitString min_v = v;
     // TODO: more efficient to look at divisors.
-    for (shift = 1; shift < length_; ++shift) {
+    for (shift = 1; shift < size_; ++shift) {
       BitString v2 = shifter_(v, shift);
       if (v2 == v) {
         break;
@@ -214,13 +282,8 @@ public:
     BitString v2 = shifter_(v, min_shift);
     return std::make_tuple(v2, min_shift, shift);
   }
-
-  BitString word(Integer idx) const { return words_[idx]; }
-  Integer index(BitString word) const { return indices_.at(word); }
-  size_t length() const { return length_; }
-  size_t size() const { return words_.size(); }
 private:
-  size_t length_;
+  size_t size_;
   BitShifter1D shifter_;
   std::map<BitString, Integer> indices_;
   std::vector<BitString> words_;
@@ -231,26 +294,17 @@ private:
 int main(int argc, char** argv)
 {
 
-  FermionTranslationDictionary1D dict(5);
+  FermionTranslationDictionary1D dict(4);
   //for (BitString i = 0; i < 16; ++i) {
   //  std::cout << dict.parse(i) << std::endl;
   //}
-  using namespace std;
-  
   dict.show();
-  cout << dict.size() << endl;
-  cout << dict.length() << endl;
-  for (Integer i = 0 ; i < dict.size() ; ++i) {
-    BitString w = dict.word(i);
-    Integer i2 = dict.index(w);
-    std::cout << i << " => " << std::bitset<BITSIZE>(w) << " => " << i2 << std::endl;
-  }
-  
   return 0;
 }
 
 int main2(int argc, char** argv)
 {
+  const size_t BITSIZE = 32;
   std::cout << std::bitset<BITSIZE>(bitrotate<BitString>(0x1, -1, 0x11111)) << std::endl;
 
 
@@ -290,5 +344,74 @@ int main2(int argc, char** argv)
     }
   }
 
+
+  //shift(1, 4, 2, 0, 0);
   return 0;
 }
+
+#if 0
+BOOST_AUTO_TEST_CASE(collector_test_double)
+{
+  using namespace std;
+  using namespace kore;
+  using namespace kore::collector;
+  mt19937_64 rangen;
+  uniform_real_distribution<double> distrib(0.0, 1.0);
+
+  int64_t nr = 256;
+  int64_t nc = 128;
+  std::vector<double> phi_tgt1(nr, 0.0);
+  std::vector<double> phi_tgt2(nr, 0.0);
+  std::vector<double> phi_src(nc, 0.0);
+  std::vector<double> mat(nr*nc, 0.0);
+  for (int64_t ir = 0 ; ir < nr ; ++ir)
+  for (int64_t ic = 0 ; ic < nc ; ++ic) {
+    double v = distrib(rangen);
+    mat[ir*nc+ic] = v;
+  }
+
+  DenseVectorCollector<int64_t, double> dvc(phi_src.data(), phi_tgt2.data(), nr, nc);
+  
+  for (int64_t ir = 0 ; ir < nr ; ++ir) {
+    for (int64_t ic = 0 ; ic < nc ; ++ic) {
+      phi_tgt1[ir] += mat[ir*nc+ic] * phi_src[ic];
+      dvc(ir, ic, mat[ir*nc+ic]);
+    }
+  }
+  for (int64_t ir = 0 ; ir < nr ; ++ir) {
+    BOOST_CHECK_CLOSE(phi_tgt1[ir], phi_tgt2[ir], 1E-8);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(collector_test_int64)
+{
+  using namespace std;
+  using namespace kore;
+  using namespace kore::collector;
+  mt19937_64 rangen;
+
+  int64_t nr = 256;
+  int64_t nc = 128;
+  std::vector<int64_t> phi_tgt1(nr, 0.0);
+  std::vector<int64_t> phi_tgt2(nr, 0.0);
+  std::vector<int64_t> phi_src(nc, 0.0);
+  std::vector<int64_t> mat(nr*nc, 0.0);
+  for (int64_t ir = 0 ; ir < nr ; ++ir)
+  for (int64_t ic = 0 ; ic < nc ; ++ic) {
+    int64_t v = rangen();
+    mat[ir*nc+ic] = v;
+  }
+
+  DenseVectorCollector<int64_t, int64_t> dvc(phi_src.data(), phi_tgt2.data(), nr, nc);
+  
+  for (int64_t ir = 0 ; ir < nr ; ++ir) {
+    for (int64_t ic = 0 ; ic < nc ; ++ic) {
+      phi_tgt1[ir] += mat[ir*nc+ic] * phi_src[ic];
+      dvc(ir, ic, mat[ir*nc+ic]);
+    }
+  }
+  for (int64_t ir = 0 ; ir < nr ; ++ir) {
+    BOOST_CHECK_EQUAL(phi_tgt1[ir], phi_tgt2[ir]);
+  }
+}
+#endif

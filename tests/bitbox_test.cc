@@ -9,8 +9,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-
-#include "kore/bitbox.h"
+#include "bitbox.h"
 
 BOOST_AUTO_TEST_CASE(simpler)
 {

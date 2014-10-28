@@ -7,7 +7,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "kore/collector.h"
+#include "collector.h"
 
 BOOST_AUTO_TEST_CASE(collector_test_double)
 {
