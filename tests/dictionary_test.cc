@@ -8,7 +8,7 @@
 #include <kore/kore>
 //#include <kore/dictionary.h>
 
-#include "tuple_stream.h"
+#include "kore/utility/tuple_stream.h"
 
 typedef kore::uint64_t BitString;
 typedef kore::int64_t Integer;
