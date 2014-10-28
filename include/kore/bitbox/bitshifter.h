@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include "../typedefs.h"
 
 //
@@ -8,7 +9,40 @@
 namespace kore {
 namespace bitbox {
 
-  template <typename _BitString, typename _Index> inline
+  template <size_t _Dim, typename _BitString, typename _Index>
+    class BitShifter
+  {
+  public:
+    static const size_t Dim = _Dim;
+    typedef _BitString BitString;
+    typedef _Index Index;
+    
+    //template <typename ... Args, size_t D>
+    template <typename ... Args>
+    BitShifter(Args ... args);
+    
+    template <typename ...Args>
+    void set_shape(Index n, Args... args);
+    void set_shape(Index n);
+    
+    template <typename ... Args>
+    BitString operator()(BitString v, Index s, Args ... args) const;
+    BitString operator()(BitString v, Index s) const;
+    
+    Index size() const { return size_; }
+    BitString mask_all() const { return mask_all_; }
+    const std::array<Index, Dim>& shape() const { return shape_; }
+    const std::array<Index, Dim>& stride() const { return stride_; }
+    const std::array<BitString, Dim>& mask() const { return mask_; }
+  private:
+    Index size_;
+    BitString mask_all_;
+    std::array<Index, Dim> shape_;
+    std::array<Index, Dim> stride_;
+    std::array<BitString, Dim> mask_;
+  };
+  
+  template <typename _BitString, typename _Index> 
   class BitShifter2D
   {
   public:
@@ -52,12 +86,14 @@ namespace bitbox {
 
   private:
     Index size_;
+    BitString mask_all_;
     std::array<Index, 2> shape_;
     std::array<Index, 2> stride_;
     std::array<BitString, 2> mask_;
-    BitString mask_all_;
   };
 
 
 } // namespace bitbox
 } // namespace kore
+#include "bitshifter_impl.h"
+
