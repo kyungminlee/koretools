@@ -3,5 +3,7 @@ INCLUDE_PATHS = ../include $(HOME)/.brew/include
 LIBRARY_PATHS = $(HOME)/.brew/lib
 LIBRARIES = boost_unit_test_framework-mt
 
+
 CXXFLAGS = -g -O0 -Wall -std=c++11 -stdlib=libc++
 LDFLAGS = 
+

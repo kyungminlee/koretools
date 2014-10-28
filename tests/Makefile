@@ -8,6 +8,7 @@ LIBRARY_FLAGS = $(foreach d, $(LIBRARY_PATHS), -L$d) $(foreach l, $(LIBRARIES), 
 all: $(TARGETS)
 
 % : %.cc
-	$(CXX) $(CXXFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(LIBRARY_FLAGS) $< -o $@  
+	$(CXX) $(CXXFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(LIBRARY_FLAGS) $< -o $@
+
 clean :
 	rm -rf $(TARGETS) *.dSYM
