@@ -3,7 +3,7 @@ cimport cython
 cimport numpy as c_np
 import numpy as np
 
-
+from c_paralinalg cimport inverse as _inverse, transpose as _transpose, dot as _dot, eigh as _eigh
     
 ctypedef fused scalar_t:
     c_np.float32_t
@@ -15,6 +15,7 @@ ctypedef fused real_t:
     c_np.float32_t
     c_np.float64_t
 
+'''
 cdef extern from "paralinalg.h" namespace "kore::paralinalg":
     void _inverse "kore::paralinalg::inverse" [S](ssize_t n_item,
                                                   ssize_t n, 
@@ -37,6 +38,7 @@ cdef extern from "paralinalg.h" namespace "kore::paralinalg":
                                                S* in_mats, 
                                                R* out_eigvals, 
                                                S* out_eigvecs) nogil
+'''
 
 def _check_type_eigen(c_np.ndarray in_mats not None,
                       c_np.ndarray out_eigvals not None, 
