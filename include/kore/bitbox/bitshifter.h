@@ -2,6 +2,7 @@
 #include <array>
 #include "../typedefs.h"
 
+
 //
 // Collection of bit operations.
 //
