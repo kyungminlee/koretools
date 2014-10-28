@@ -1,5 +1,5 @@
 #pragma once
-#include "typedefs.h"
+#include "../typedefs.h"
 
 //
 // Collection of bit operations.

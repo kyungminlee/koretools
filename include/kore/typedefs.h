@@ -10,7 +10,6 @@ namespace std { using namespace tr1; };
   #include <type_traits>
 #endif
 #include <cassert>
-
 #include <complex>
 #include <limits>
 #include <stdexcept>

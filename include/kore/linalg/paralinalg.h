@@ -3,7 +3,7 @@
 
 #include <tbb/tbb.h>
 #include <Eigen/Eigen>
-#include "typedefs.h"
+#include "../typedefs.h"
 
 namespace kore {
 namespace paralinalg {
