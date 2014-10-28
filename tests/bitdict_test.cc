@@ -12,6 +12,7 @@
 #include <tuple>
 #include "kore/bitbox/bitbox.h"
 #include "kore/bitdict/bitdict.h"
+#include "kore/bitdict/constraint.h"
 
 BOOST_AUTO_TEST_CASE(any)
 {
@@ -45,6 +46,9 @@ BOOST_AUTO_TEST_CASE(any)
   }
 }
 
+
+ 
+
 BOOST_AUTO_TEST_CASE(fixed_density)
 {
   using namespace kore;
@@ -61,12 +65,40 @@ BOOST_AUTO_TEST_CASE(fixed_density)
     return std::make_tuple(true, word, nullptr);
   });
   BOOST_CHECK_LE(sdict.size(), (1 << length));
-
+  std::cout << "sdict.size() = " << sdict.size() << std::endl;
   for (uint64_t wrd = 0 ; wrd < (1<<length)+10 ; ++wrd) {
     int64_t idx = sdict.index(wrd);
     //std::cout << "word " << std::bitset<12>(wrd) << " : index " << idx << std::endl;
     if (idx == -1) {
     } else {
+      std::cout << "word " << std::bitset<12>(wrd) << " : index " << idx << std::endl;
+      uint64_t new_wrd = sdict.word(idx);
+      BOOST_CHECK_EQUAL(new_wrd, wrd);
+    }
+  }
+  for (int64_t idx = 0; idx < sdict.size(); ++idx) {
+    uint64_t wrd = sdict.word(idx);
+    int64_t new_idx = sdict.index(wrd);
+    BOOST_CHECK_EQUAL(idx, new_idx);
+  }
+}
+
+
+BOOST_AUTO_TEST_CASE(fixed_density_two)
+{
+  using namespace kore;
+  using namespace kore::bitdict;
+  int64_t length = 8;
+  int64_t density = 5;
+  BitDictionary<> sdict(length, constraint::FixedDensity<uint64_t, int64_t>(length, density));
+  BOOST_CHECK_LE(sdict.size(), (1 << length));
+  std::cout << "sdict.size() = " << sdict.size() << std::endl;
+  for (uint64_t wrd = 0 ; wrd < (1<<length)+10 ; ++wrd) {
+    int64_t idx = sdict.index(wrd);
+    //std::cout << "word " << std::bitset<12>(wrd) << " : index " << idx << std::endl;
+    if (idx == -1) {
+    } else {
+      std::cout << "word " << std::bitset<12>(wrd) << " : index " << idx << std::endl;
       uint64_t new_wrd = sdict.word(idx);
       BOOST_CHECK_EQUAL(new_wrd, wrd);
     }
@@ -80,3 +112,28 @@ BOOST_AUTO_TEST_CASE(fixed_density)
 
 
 
+BOOST_AUTO_TEST_CASE(fixed_density_modulus_two)
+{
+  using namespace kore;
+  using namespace kore::bitdict;
+  int64_t length = 6;
+  int64_t density = 2;
+  int64_t modulus = 2;
+  BitDictionary<> sdict(length, constraint::FixedDensityModulus<uint64_t, int64_t>(length, density, length, modulus));
+  BOOST_CHECK_LE(sdict.size(), (1 << length));
+  std::cout << "sdict.size() = " << sdict.size() << std::endl;
+  for (uint64_t wrd = 0 ; wrd < (1<<length)+10 ; ++wrd) {
+    int64_t idx = sdict.index(wrd);
+    if (idx == -1) {
+    } else {
+      std::cout << "word " << std::bitset<12>(wrd) << " : index " << idx << std::endl;
+      uint64_t new_wrd = sdict.word(idx);
+      BOOST_CHECK_EQUAL(new_wrd, wrd);
+    }
+  }
+  for (int64_t idx = 0; idx < sdict.size(); ++idx) {
+    uint64_t wrd = sdict.word(idx);
+    int64_t new_idx = sdict.index(wrd);
+    BOOST_CHECK_EQUAL(idx, new_idx);
+  }
+}
