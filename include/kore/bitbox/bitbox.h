@@ -39,13 +39,14 @@ bool bitcheck(BitString value, size_t digit)
   return (0x1 & (value >> digit) ) != 0x0;
 }
 
+#ifdef USE_CXX11
 template <typename BitString, typename ...Args> inline
 bool bitcheck(BitString value, size_t digit, Args ... args)
 {
   static_assert(std::is_unsigned<BitString>::value, "BitString should be unsigned");
   return (value >> digit) & bitcheck(value, args...);
 }
-
+#endif
 
 template <typename BitString> inline
 BitString bitset(BitString value, size_t digit, bool bitvalue)
@@ -189,6 +190,7 @@ size_t partitioncount(BitString val, BitString mask)
 }
 
 // TODO: Should be tested further
+#ifdef USE_CXX11
 template <typename BitString, typename SizeInt=ptrdiff_t> inline
 BitString bitrotate(BitString value, SizeInt step, BitString mask = ~(BitString(0)))
 {
@@ -207,7 +209,7 @@ BitString bitrotate(BitString value, SizeInt step, BitString mask = ~(BitString(
   BitString result = unmasked_value | value_expanded;
   return result;
 }
-
+#endif
 
 
 namespace naive
