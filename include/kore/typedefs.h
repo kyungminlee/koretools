@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef USE_CXX11
+
 #ifdef USE_TR1
   #include <tr1/cstdint>
   #include <tr1/cinttypes>
@@ -9,6 +12,7 @@ namespace std { using namespace tr1; };
   #include <cinttypes>
   #include <type_traits>
 #endif
+
 #include <cassert>
 #include <complex>
 #include <limits>
@@ -73,3 +77,4 @@ namespace kore {
 
 }
 
+#endif

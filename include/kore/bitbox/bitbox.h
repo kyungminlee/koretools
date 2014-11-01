@@ -1,5 +1,11 @@
 #pragma once
 #include "../typedefs.h"
+#ifdef USE_CXX11
+
+#else
+#define static_assert(x, y) 
+#endif
+
 
 //
 // Collection of bit operations.
@@ -111,7 +117,8 @@ size_t bitwsum(BitString val, BitString mask)
   BitString v = (val & mask)>>1;
   size_t digit = 1;
   while(v) {
-    sum += digit * (0x1 & v);
+    //sum += digit * (0x1 & v);
+    sum += (0x1 & v) ? digit : 0;
     v >>= 1;
     digit++;
   }
