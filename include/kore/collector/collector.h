@@ -1,6 +1,7 @@
 #pragma once
 #include <cassert>
 
+
 namespace kore {
 namespace collector {
 
@@ -58,36 +59,45 @@ struct DenseMatrixCollector
   }
 };
 
-
 template <typename IndexType, typename ScalarType>
+struct CountCollector
+{
+ public:
+  IndexType const n_row;
+  IndexType const n_col;
+  IndexType count;
+
+  CountCollector(IndexType nr, IndexType nc) : n_row(nr), n_col(nc), count(0) { }
+
+  void operator()(IndexType row, IndexType col, ScalarType val) { 
+      assert(0 <= row && row < n_row);
+      assert(0 <= col && col < n_val);
+      count++; 
+  } 
+};
+
+template <typename IndexType, typename ScalarType, typename RowIterator, typename ColIterator, typename ValIterator>
 struct SparseCooMatrixCollector
 {
  public:
   IndexType const n_row;
   IndexType const n_col;
-  std::vector<IndexType> rows, cols;
-  std::vector<ScalarType> vals;
+  RowIterator row_iterator;
+  ColIterator col_iterator;
+  ValIterator val_iterator;
 
-  SparseCooMatrixCollector(IndexType nr, IndexType nc) : n_row(nr), n_col(nc) { }
+  SparseCooMatrixCollector(IndexType nr, IndexType nc, 
+                           RowIterator ri, ColIterator ci, ValIterator vi) 
+      : n_row(nr), n_col(nc), row_iterator(ri), col_iterator(ci), val_iterator(vi) { }
   
   void operator()(IndexType row, IndexType col, ScalarType val)
   {
-    rows.push_back(row);
-    cols.push_back(col);
-    vals.push_back(val);
+      assert(0 <= row && row < n_row);
+      assert(0 <= col && col < n_col);
+      *row_iterator++ = row;
+      *col_iterator++ = col;
+      *val_iterator++ = val;
   }
-
-  IndexType size() const { return vals.size(); }
-
-  template <typename RowIterator, typename ColIterator, typename ValIterator>
-  void fetch(RowIterator ri, ColIterator ci, ValIterator vi) const
-  {
-    std::copy(rows.begin(), rows.end(), ri);
-    std::copy(cols.begin(), cols.end(), ci);
-    std::copy(vals.begin(), vals.end(), vi);
-  }
-
-  void clear() { rows.clear(); cols.clear(); vals.clear(); }
 };
 
 
