@@ -71,7 +71,7 @@ struct CountCollector
 
   void operator()(IndexType row, IndexType col, ScalarType val) { 
       assert(0 <= row && row < n_row);
-      assert(0 <= col && col < n_val);
+      assert(0 <= col && col < n_col);
       count++; 
   } 
 };
