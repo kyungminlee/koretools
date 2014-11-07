@@ -40,7 +40,7 @@ struct RowCountCollector
     row_count[row - row_start]++;
   }
 
-}// struct RowCountCollector
+}; // struct RowCountCollector
 
 } // collector
 } // kore
