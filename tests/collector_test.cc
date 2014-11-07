@@ -1,5 +1,5 @@
 #include <cassert>
-#include <random>
+#include <boost/random.hpp>
 #include <boost/utility.hpp>
 
 #define BOOST_TEST_DYN_LINK
@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(collector_test_double)
   using namespace std;
   using namespace kore;
   using namespace kore::collector;
-  mt19937_64 rangen;
-  uniform_real_distribution<double> distrib(0.0, 1.0);
+  boost::random::mt19937_64 rangen;
+  boost::random::uniform_real_distribution<double> distrib(0.0, 1.0);
 
   int64_t nr = 256;
   int64_t nc = 128;

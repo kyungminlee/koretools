@@ -6,9 +6,8 @@
 
 
 #include <exception>
+#include <stdexcept>
 #include "../bitbox/bitbox.h"
-
-
 
 namespace kore {
 namespace dictionary {
@@ -33,8 +32,8 @@ struct FixedDensity : public Generic<BitString>
 {
  public:
   FixedDensity(size_t k) : _k(k) { 
-      if(k <= 0) { throw std::invalid_argument("k should be positive"); }
-      if(k > sizeof(BitString)) { throw std::invalid_argument("k should not exceed size of bitstring"); }
+      if(k <= 0) { throw std::domain_error("k should be positive"); }
+      if(k > sizeof(BitString)) { throw std::domain_error("k should not exceed size of bitstring"); }
   }  
   inline bool operator()(BitString val) const { return (bitbox::bitcount(val) == _k); }
  private:
@@ -46,10 +45,10 @@ struct FixedDensityModulus : public Generic<BitString>
 {
  public:
   FixedDensityModulus(size_t k, size_t m, size_t r) : _k(k), _m(m), _r(r) {
-      if(k <= 0) { throw std::invalid_argument("k should be positive"); }
-      if(k > sizeof(BitString)*8) { throw std::invalid_argument("k should not exceed size of bitstring"); }
-      if(m <= 0) { throw std::invalid_argument("m should be positive"); }
-      if(r < 0 || r >= m) { throw std::invalid_argument("r should be in [0, m)"); }
+      if(k <= 0) { throw std::domain_error("k should be positive"); }
+      if(k > sizeof(BitString)*8) { throw std::domain_error("k should not exceed size of bitstring"); }
+      if(m <= 0) { throw std::domain_error("m should be positive"); }
+      if(r < 0 || r >= m) { throw std::domain_error("r should be in [0, m)"); }
   }
 
   inline bool operator()(BitString val) const {
