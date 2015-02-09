@@ -57,7 +57,7 @@ struct UnitDot {
   void operator()(const tbb::blocked_range<SizeType>& range) const {
     for (SizeType i = range.begin(); i < range.end(); ++i) {
       MatrixMapType map_in1(&_in1[_n1*_n2*i], _n1, _n2);
-      EMatrixMapType map_in2(&_in2[_n2*_n3*i], _n2, _n3);
+      MatrixMapType map_in2(&_in2[_n2*_n3*i], _n2, _n3);
       MatrixMapType map_out(&_out[_n1*_n3*i], _n1, _n3);
       map_out = map_in1 * map_in2;
     }
