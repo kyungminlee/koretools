@@ -13,6 +13,7 @@ struct CountCollector
   IndexType const n_col;
   IndexType count;
 
+  // Assertion
   kore::static_assertion<std::numeric_limits<IndexType>::is_signed> check_signed;
   kore::static_assertion<std::numeric_limits<IndexType>::is_integer> check_integer;
 

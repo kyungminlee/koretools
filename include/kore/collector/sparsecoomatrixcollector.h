@@ -15,12 +15,13 @@ struct SparseCooMatrixCollector
   ColIterator col_iterator;
   ValIterator val_iterator;
 
+  // Assertions
   kore::static_assertion<std::numeric_limits<IndexType>::is_signed> check_signed;
   kore::static_assertion<std::numeric_limits<IndexType>::is_integer> check_integer;
   kore::static_assertion<kore::is_same<typename std::iterator_traits<RowIterator>::value_type, IndexType>::value > check_row;
   kore::static_assertion<kore::is_same<typename std::iterator_traits<ColIterator>::value_type, IndexType>::value > check_col;
   kore::static_assertion<kore::is_same<typename std::iterator_traits<ValIterator>::value_type, ScalarType>::value > check_val;
-
+  
   static const bool RowRequired = true;
   static const bool ColRequired = true;
   static const bool ValRequired = true;

@@ -1,18 +1,6 @@
 #pragma once
 
-#ifdef USE_CXX11
-
-#ifdef USE_TR1
-  #include <tr1/cstdint>
-  #include <tr1/cinttypes>
-  #include <tr1/type_traits>
-namespace std { using namespace tr1; };
-#else
-  #include <cstdint>
-  #include <cinttypes>
-  #include <type_traits>
-#endif
-
+#include <cstdint>
 #include <cassert>
 #include <complex>
 #include <limits>
@@ -20,8 +8,7 @@ namespace std { using namespace tr1; };
 #include <vector>
 #include <iterator>
 
-namespace kore {
-
+#if 0
 typedef std::intmax_t       intmax_t;
 typedef std::int8_t         int8_t;
 typedef std::int16_t        int16_t;
@@ -51,30 +38,9 @@ typedef std::uint_fast16_t  uint_fast16_t;
 typedef std::uint_fast32_t  uint_fast32_t;
 typedef std::uint_fast64_t  uint_fast64_t;
 typedef std::uintptr_t      uintptr_t;
+#endif
 
 typedef float float32_t;
 typedef double float64_t;
 typedef std::complex<float32_t> complex64_t;
 typedef std::complex<float64_t> complex128_t;
-
-static_assert(sizeof(float32_t)==sizeof(int32_t), "size of float32_t is not 32 bits");
-static_assert(sizeof(float64_t)==sizeof(int64_t), "size of float64_t is not 64 bits");
-}
-
-#ifdef QUAD_MATH
-
-#include <boost/multiprecision/float128.hpp>
-namespace kore {
-typedef boost::multiprecision::float128 float128_t;
-typedef std::complex<float128_t> complex256_t;
-}
-
-#endif
-
-
-// Array
-namespace kore {
-
-}
-
-#endif

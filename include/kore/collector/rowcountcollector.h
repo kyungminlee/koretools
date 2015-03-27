@@ -15,6 +15,7 @@ struct RowCountCollector
   IndexType row_start, row_end;
   std::vector<IndexType> row_count;
   
+  // Assertions
   kore::static_assertion<std::numeric_limits<IndexType>::is_signed> check_signed;
   kore::static_assertion<std::numeric_limits<IndexType>::is_integer> check_integer;
 
