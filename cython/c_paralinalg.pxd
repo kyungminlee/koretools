@@ -13,7 +13,7 @@ ctypedef fused real_t:
     c_np.float32_t
     c_np.float64_t
 
-cdef extern from "paralinalg.h" namespace "kore::paralinalg":
+cdef extern from "kore/linalg/paralinalg.h" namespace "kore::paralinalg":
     void inverse "kore::paralinalg::inverse" [S](ssize_t n_item,
                                                  ssize_t n, 
                                                  S* in_mat, 
