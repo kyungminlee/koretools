@@ -4,7 +4,6 @@
 //
 //
 
-
 #include <exception>
 #include <stdexcept>
 #include "../bitbox/bitbox.h"
@@ -55,22 +54,6 @@ struct FixedDensityModulus : public Generic<BitString>
     return (bitbox::bitcount(val) == _k) && 
            ((bitbox::bitwsum(val) % _m) == (_r % _m));
   }
-#if 0
-  inline bool operator==(const FixedDensityModulus & rhs) const {
-    return (_k == rhs._k) && (_m == rhs._m) && (_r == rhs._r); 
-  }
-  inline bool operator<(const FixedDensityModulus &rhs) const { 
-    if (_k != rhs._k) { 
-      return _k < rhs._k; 
-	} else if (_m != rhs._m) {
-	  return _m < rhs._m; 
-	} else if (_r != rhs._r) {
-	  return _r < rhs._r; 
-	} else {
-	  return false;
-	}
-  }
-#endif
  private:
   size_t _k, _m, _r;
 };
