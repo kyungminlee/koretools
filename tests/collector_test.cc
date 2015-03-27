@@ -1,4 +1,5 @@
 #include <cassert>
+#include <random>
 #include <boost/random.hpp>
 #include <boost/utility.hpp>
 

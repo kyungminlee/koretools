@@ -1,11 +1,11 @@
 #CXX = clang++
-#INCLUDE_PATHS = ../include $(HOME)/.brew/include 
-INCLUDE_PATHS = ../include
-#LIBRARY_PATHS = $(HOME)/.brew/lib
+INCLUDE_PATHS = ../include $(HOME)/.brew/include 
+#INCLUDE_PATHS = ../include
+LIBRARY_PATHS = $(HOME)/.brew/lib
 LIBRARIES = boost_unit_test_framework-mt
 
 
-#CXXFLAGS = -g -O0 -Wall -std=c++11 -stdlib=libc++
+#CXXFLAGS = -g -O0 -Wall -std=c++11 -stdlib=libc++ -DUSE_CXX11
 CXXFLAGS = -g -O0 -Wall
 LDFLAGS = 
 

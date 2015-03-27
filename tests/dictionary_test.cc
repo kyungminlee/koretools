@@ -1,20 +1,20 @@
 #include <cassert>
-//#include <random>
+#include <random>
 #include <map>
 #include <iostream>
 #include <bitset>
 #include <array>
 
 #include <kore/kore>
-//#include <kore/dictionary.h>
 
+#ifdef USE_CXX11
 #include "kore/utility/tuple_stream.h"
+#endif
 
 typedef kore::uint64_t BitString;
 typedef kore::int64_t Integer;
 using namespace kore::bitbox;
 const size_t BITSIZE = 32;
-
 
 template <size_t Dim>
 class BitShifter
@@ -252,7 +252,6 @@ int main(int argc, char** argv)
 int main2(int argc, char** argv)
 {
   std::cout << std::bitset<BITSIZE>(bitrotate<BitString>(0x1, -1, 0x11111)) << std::endl;
-
 
   for (int i = -7; i < 10; ++i) {
     std::cout << i << " : " << bitrotate<uint64_t>(5, i, 6) << std::endl;

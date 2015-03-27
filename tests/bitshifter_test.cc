@@ -18,7 +18,7 @@ int main(int argc, char** argv)
   std::cout << std::bitset<32>(bs.mask()[0]) << std::endl;
   std::cout << std::bitset<32>(bs.mask()[1]) << std::endl;
   std::cout << std::bitset<32>(bs.mask()[2]) << std::endl;
-  
+
   return 0;
 }
 
