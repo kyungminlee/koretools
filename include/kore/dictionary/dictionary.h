@@ -15,7 +15,7 @@ namespace dictionary {
 template <typename BitString, typename IndexType=int64_t>
 struct Dictionary
 {
-  //static_assert(sizeof(BitString) <= sizeof(IndexType), "IndexType should be large enough to store BitString");
+  static_assert(sizeof(BitString) <= sizeof(IndexType), "IndexType should be large enough to store BitString");
  public:
   template <typename CriterionType>
   Dictionary(size_t n, CriterionType criterion): _n(n) //, _indices( (0x1L<<n), int64_t(-1L) )
