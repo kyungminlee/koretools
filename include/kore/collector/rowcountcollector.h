@@ -14,15 +14,14 @@ struct RowCountCollector
   IndexType const n_col;
   IndexType row_start, row_end;
   std::vector<IndexType> row_count;
-  
-  // Assertions
-  kore::static_assertion<std::numeric_limits<IndexType>::is_signed> check_signed;
-  kore::static_assertion<std::numeric_limits<IndexType>::is_integer> check_integer;
+
+  static_assert(std::numeric_limits<IndexType>::is_signed, "IndexType should be signed");
+  static_assert(std::numeric_limits<IndexType>::is_integer, "IndexType should be integer");
 
   static const bool RowRequired = true;
   static const bool ColRequired = false;
   static const bool ValRequired = false;
-  
+
   RowCountCollector(IndexType nr, IndexType nc,
                     IndexType the_row_start=0, IndexType the_row_end=-1)
       : n_row(nr), n_col(nc), row_start(the_row_start), row_end(the_row_end)

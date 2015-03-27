@@ -14,13 +14,8 @@ struct DenseVectorCollector
   IndexType  const n_row;
   IndexType  const n_col;
 
-#ifdef USE_CXX11
-  static_assert(std::is_integral<IndexType>::value && std::is_signed<IndexType>::value,
-                "IndexType should be signed integer");
-#else
-  kore::static_assertion<std::numeric_limits<IndexType>::is_signed> check_signed;
-  kore::static_assertion<std::numeric_limits<IndexType>::is_integer> check_integer;
-#endif
+  static_assert(std::numeric_limits<IndexType>::is_signed, "IndexType should be signed");
+  static_assert(std::numeric_limits<IndexType>::is_integer, "IndexType should be integer");
 
   static const bool RowRequired = true;
   static const bool ColRequired = true;

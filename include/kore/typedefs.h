@@ -8,7 +8,8 @@
 #include <vector>
 #include <iterator>
 
-#if 0
+namespace kore {
+
 typedef std::intmax_t       intmax_t;
 typedef std::int8_t         int8_t;
 typedef std::int16_t        int16_t;
@@ -38,9 +39,10 @@ typedef std::uint_fast16_t  uint_fast16_t;
 typedef std::uint_fast32_t  uint_fast32_t;
 typedef std::uint_fast64_t  uint_fast64_t;
 typedef std::uintptr_t      uintptr_t;
-#endif
 
 typedef float float32_t;
 typedef double float64_t;
 typedef std::complex<float32_t> complex64_t;
 typedef std::complex<float64_t> complex128_t;
+
+} // namespace kore
