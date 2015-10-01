@@ -6,6 +6,7 @@
 #include <mkl.h>
 #include <mkl_lapacke.h>
 #else
+#include <cblas.h>
 #include <lapacke.h>
 #endif
 
@@ -97,8 +98,8 @@ Array<kore::complex128_t, 2> inverse(const Array<kore::complex128_t, 2>& mat)
   std::vector<lapack_int> ipiv(n);
 
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_float64_t*>(out.begin()), lda, ipiv.data());
-  LAPACKE_zgetri(LAPACK_ROW_MAJOR, n, reinterpret_cast<lapack_complex_float64_t*>(out.begin()), lda, ipiv.data());
+    reinterpret_cast<lapack_complex_double*>(out.begin()), lda, ipiv.data());
+  LAPACKE_zgetri(LAPACK_ROW_MAJOR, n, reinterpret_cast<lapack_complex_double*>(out.begin()), lda, ipiv.data());
   return out;
 }
 
@@ -163,7 +164,7 @@ eigensystem_hermitian(const Array<kore::complex128_t, 2>& matrix)
   Array<kore::complex128_t, 2> eigvecs = matrix.clone();
   {
     lapack_int info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, 'V', 'L',
-      n, reinterpret_cast<lapack_complex_float64_t*>(eigvecs.begin()),
+      n, reinterpret_cast<lapack_complex_double*>(eigvecs.begin()),
       lda, eigvals.begin());
     assert(info == 0);
   }
@@ -188,7 +189,7 @@ eigensystem_hermitian(const ConstArray<kore::complex128_t, 2>& matrix)
   Array<kore::complex128_t, 2> eigvecs(matrix);
   {
     lapack_int info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, 'V', 'L',
-      n, reinterpret_cast<lapack_complex_float64_t*>(eigvecs.begin()),
+      n, reinterpret_cast<lapack_complex_double*>(eigvecs.begin()),
       lda, eigvals.begin());
     assert(info == 0);
   }
@@ -211,7 +212,7 @@ kore::complex128_t determinant(Array<kore::complex128_t, 2>& mat)
 
   std::vector<lapack_int> ipiv(n);
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_float64_t*>(mat.begin()), lda, ipiv.data());
+    reinterpret_cast<lapack_complex_double*>(mat.begin()), lda, ipiv.data());
   int sgn = 0;
   for (size_t i = 0; i < n; ++i) {
     if (ipiv[i] != i + 1) { sgn = !sgn; }
@@ -236,7 +237,7 @@ kore::complex128_t log_determinant(Array<kore::complex128_t, 2>& mat)
 
   std::vector<lapack_int> ipiv(n);
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_float64_t*>(mat.begin()), lda, ipiv.data());
+    reinterpret_cast<lapack_complex_double*>(mat.begin()), lda, ipiv.data());
   int sgn = 0;
   for (size_t i = 0; i < n; ++i) {
     if (ipiv[i] != i + 1) { sgn = !sgn; }
@@ -293,7 +294,7 @@ kore::complex128_t determinant(const Array<kore::complex128_t, 2>& mat)
   std::vector<lapack_int> ipiv(n);
 
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_float64_t*>(cache_mat.data()), lda, ipiv.data());
+    reinterpret_cast<lapack_complex_double*>(cache_mat.data()), lda, ipiv.data());
   auto sgn = false;
   for (size_t i = 0; i < n; ++i) {
     if (ipiv[i] != i + 1) { sgn = !sgn; }
@@ -322,7 +323,7 @@ kore::complex128_t determinant(const ConstArray<kore::complex128_t, 2>& mat)
   std::vector<lapack_int> ipiv(n);
 
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_float64_t*>(cache_mat.data()), lda, ipiv.data());
+    reinterpret_cast<lapack_complex_double*>(cache_mat.data()), lda, ipiv.data());
   int sgn = 0;
   for (size_t i = 0; i < n; ++i) {
     if (ipiv[i] != i + 1) { sgn = !sgn; }
