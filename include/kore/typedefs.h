@@ -45,4 +45,10 @@ typedef double float64_t;
 typedef std::complex<float32_t> complex64_t;
 typedef std::complex<float64_t> complex128_t;
 
+static_assert(sizeof(float32_t) == 4u, "size of float32_t should be 4 bytes");
+static_assert(sizeof(float64_t) == 8u, "size of float64_t should be 8 bytes");
+static_assert(sizeof(complex64_t) == 8u, "size of complex64_t should be 8 bytes");
+static_assert(sizeof(complex128_t) == 16u, "size of complex128_t should be 16 bytes");
+
+
 } // namespace kore

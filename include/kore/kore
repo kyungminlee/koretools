@@ -5,4 +5,5 @@
 #include "dictionary/dictionary.h"
 #include "dictionary/constraint.h"
 #include "collector/collector.h"
+#include "array/array.h"
 #endif
