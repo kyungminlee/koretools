@@ -20,6 +20,9 @@ eigensystem_hermitian(const Array<kore::complex128_t, 2>& matrix);
 template <typename ValueType>
 Array<ValueType, 2> transpose(const Array<ValueType, 2>& arr);
 
+//template <typename ValueType>
+//Array<ValueType, 2> transpose(Array<ValueType, 2>&& arr);
+
 template <typename ValueType>
 Array<ValueType, 2> transpose(const ConstArray<ValueType, 2>& arr);
 

@@ -11,9 +11,7 @@
 #endif
 
 namespace kore {
-
 namespace array {
-
 namespace linalg {
 
 /// ----- Matrix Multiplication
@@ -48,16 +46,17 @@ Array<float64_t, 2> dot(const Array<float64_t, 2>& a, const Array<float64_t, 2>&
   assert(ldc == c.stride(0));
 
   float64_t alpha = 1.0;
-  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
     m, n, k, alpha, a.begin(), lda, b.begin(), ldb, 0.0, c.begin(), ldc);
 
   return c;
 }
 
 
-template <typename ValueType>
+template <typename ValueType> inline
 Array<ValueType, 2> transpose(const Array<ValueType, 2>& arr)
 {
+  std::cout << "LVALUE REFERENCE" << std::endl;
   size_t n1 = arr.shape(0), n2 = arr.shape(1);
 
   Array<ValueType, 2> out(n2, n1);
@@ -69,7 +68,8 @@ Array<ValueType, 2> transpose(const Array<ValueType, 2>& arr)
   return out;
 }
 
-template <typename ValueType>
+
+template <typename ValueType> inline
 Array<ValueType, 2> transpose(const ConstArray<ValueType, 2>& arr)
 {
   size_t n1 = arr.shape(0), n2 = arr.shape(1);
@@ -82,6 +82,7 @@ Array<ValueType, 2> transpose(const ConstArray<ValueType, 2>& arr)
   } // for i1
   return out;
 }
+
 
 inline
 Array<kore::complex128_t, 2> inverse(const Array<kore::complex128_t, 2>& mat)
@@ -103,6 +104,7 @@ Array<kore::complex128_t, 2> inverse(const Array<kore::complex128_t, 2>& mat)
   return out;
 }
 
+
 inline
 Array<float64_t, 2> inverse(const Array<float64_t, 2>& mat)
 {
@@ -123,9 +125,7 @@ Array<float64_t, 2> inverse(const Array<float64_t, 2>& mat)
 }
 
 
-
-
-std::tuple<Array<float64_t, 1>, Array<float64_t, 2> >
+std::tuple<Array<float64_t, 1>, Array<float64_t, 2> > inline
 eigensystem_hermitian(const Array<float64_t, 2>& matrix)
 {
 #ifndef NDEBUG
@@ -147,7 +147,8 @@ eigensystem_hermitian(const Array<float64_t, 2>& matrix)
   return std::make_tuple(std::move(eigvals), std::move(eigvecs));
 }
 
-std::tuple<Array<float64_t, 1>, Array<kore::complex128_t, 2> >
+
+std::tuple<Array<float64_t, 1>, Array<kore::complex128_t, 2> > inline
 eigensystem_hermitian(const Array<kore::complex128_t, 2>& matrix)
 {
 #ifndef NDEBUG
@@ -172,7 +173,7 @@ eigensystem_hermitian(const Array<kore::complex128_t, 2>& matrix)
 }
 
 
-std::tuple<Array<float64_t, 1>, Array<kore::complex128_t, 2> >
+std::tuple<Array<float64_t, 1>, Array<kore::complex128_t, 2> > inline
 eigensystem_hermitian(const ConstArray<kore::complex128_t, 2>& matrix)
 {
 #ifndef NDEBUG
@@ -223,6 +224,7 @@ kore::complex128_t determinant(Array<kore::complex128_t, 2>& mat)
   }
   return det;
 }
+
 
 inline
 kore::complex128_t log_determinant(Array<kore::complex128_t, 2>& mat)
@@ -276,6 +278,7 @@ float64_t determinant(Array<float64_t, 2>& mat)
   return det;
 }
 
+
 //! Compute determinant.
 //! Keep the contents inside.
 inline
@@ -306,6 +309,7 @@ kore::complex128_t determinant(const Array<kore::complex128_t, 2>& mat)
   return det;
 }
 
+
 //! Compute determinant.
 //! Keep the contents inside.
 inline
@@ -334,8 +338,6 @@ kore::complex128_t determinant(const ConstArray<kore::complex128_t, 2>& mat)
   }
   return det;
 }
-
-
 
 
 //! Compute determinant.
@@ -396,7 +398,5 @@ float64_t determinant(const ConstArray<float64_t, 2>& mat)
 }
 
 } // namespace linalg
-
 } // namespace array
-
 } // namespace kore
