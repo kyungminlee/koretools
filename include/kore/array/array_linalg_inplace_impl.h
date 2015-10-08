@@ -190,15 +190,10 @@ log_determinant_abs(Array<complex128_t, 2> & mat)
   assert(static_cast<size_t>(n) == mat.shape(1));
   assert(static_cast<size_t>(lda) == mat.stride(0));
   assert(m == n);
-
   std::vector<lapack_int> ipiv(n);
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
     reinterpret_cast<lapack_complex_double*>(mat.begin()), lda, ipiv.data());
-  int sgn = 0;
-  for (lapack_int i = 0; i < n; ++i) {
-    if (ipiv[i] != i + 1) { sgn = !sgn; }
-  }
-  float64_t log_det = 0.0;// = (sgn ? kore::complex128_t(0.0, M_PI) : 0.0);
+  float64_t log_det = 0.0;
   for (lapack_int i = 0; i < n; ++i) {
     log_det += std::log(std::abs(mat(i, i)));
   }

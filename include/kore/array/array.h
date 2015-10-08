@@ -15,7 +15,8 @@
 #include <typeinfo>
 
 #include "../typedefs.h"
-#include "../debugshow.h"
+#include "../utility/debug.h"
+//#include "../debug.h"
 
 namespace kore {
 namespace array {
@@ -133,6 +134,11 @@ public:
     std::cout << std::endl;
   }
 
+  bool operator==(const ArrayStructure & structure) {
+    return (shape_ == structure.shape_) && (stride_ == structure.stride_);
+  }
+
+
   SizeType length() const noexcept { return length_; }
   SizeType size()   const noexcept { return length_; }
   std::array<SizeType, Rank> shape()  const noexcept { return shape_; }
@@ -223,12 +229,14 @@ public:
   Array() = delete;
   //Array(Array const & arr) = delete;
 
+#if 0
   Array(Array & arr) noexcept
     : structure_(arr.structure_)
     , data_(arr.data_)
     , own_(arr.own_)
   {
   }
+#endif
 
   Array(Array && arr) noexcept
     : structure_(std::move(arr.structure_))
@@ -237,6 +245,7 @@ public:
   {
   }
 
+#if 0
   Array& operator=(Array & arr) noexcept
   {
     structure_ = arr.structure_;
@@ -244,6 +253,7 @@ public:
     own_ = arr.own_;
     return *this;
   }
+#endif
 
   Array& operator=(Array && arr) noexcept
   {
@@ -325,21 +335,43 @@ public:
     reshape(SizeType s, Args ... args) const
   {
     Array<ValueType, 1u+sizeof...(Args)> ret(data_, own_, s, args...);
-#ifndef NDEBUG
-    if (ret.size() != size()) throw std::length_error("Array::reshape()");
-#endif
+    KORE_ASSERT(ret.size() == size(), "size of the array should not change during reshape");
     return ret;
   }
 
+  //! Return a view of the array.
+  //!
+  //! The returned view can potentially temper with data, 
+  //! so this should be a non-const member.
+  Array view() 
+  {
+    // TODO: Safety check??
+    Array ret(data_, own_, structure_);
+    return ret;
+  }
+
+  //! Return a constant view of the array.
+  //!
+  //! The returned view cannot temper with data.
+  //! so this should be a const member.
   ConstArray constant() const
   {
     Array<ConstValueType, Rank> ret(data_, own_, structure_);
     return ret;
   }
 
+
+  //! Return a clone of the array.
+  Array<NonConstValueType, Rank> clone() const
+  {
+    // TODO: Safety check??
+    Array<NonConstValueType, Rank> ret(structure_);
+    std::copy(cbegin(), cend(), ret.begin());
+    return ret;
+  }
+
   // TODO: MAKE SURE THIS IS A GOOD IDEA
-  operator ConstArray const &()
-    const
+  operator ConstArray const &() const
   {
     return *reinterpret_cast<ConstArray const *>(this);
   }
@@ -348,34 +380,42 @@ public:
   ReferenceType operator()(SizeType midx, Args ... args)
   {
     // TODO: Safety check??
-    static_assert(Rank == 1+sizeof...(Args), "Number of arguments should match Rank");
+    static_assert(Rank == 1u + sizeof...(Args), "Number of arguments should match Rank");
+    auto p = data_.get();
+    KORE_ASSERT(p != nullptr, "p should not be a nullptr (memory deallocated)");
     SizeType idx = structure_.index(midx, args...);
-    return data_.get()[idx];
+    return p[idx];
   }
 
   template <typename ... Args>
   ConstReferenceType operator()(SizeType midx, Args ... args) const
   {
-    static_assert(Rank == 1+sizeof...(Args), "Number of arguments should match Rank");
+    static_assert(Rank == 1u + sizeof...(Args), "Number of arguments should match Rank");
+    auto p = data_.get();
+    KORE_ASSERT(p != nullptr, "p should not be a nullptr (memory deallocated)");
     SizeType idx = structure_.index(midx, args...);
-    return data_.get()[idx];
+    return p[idx];
   }
 
   template <typename ... Args>
   ReferenceType at(SizeType midx, Args ... args)
   {
     // TODO: Safety check??
-    static_assert(Rank == 1+sizeof...(Args), "Number of arguments should match Rank");
+    static_assert(Rank == 1u + sizeof...(Args), "Number of arguments should match Rank");
+    auto p = data_.get();
+    if (p == nullptr) { throw std::out_of_range("range"); }
     SizeType idx = structure_.index(midx, args...);
-    return data_.get()[idx];
+    return p[idx];
   }
 
   template <typename ... Args>
   ConstReferenceType at(SizeType midx, Args ... args) const
   {
-    static_assert(Rank == 1+sizeof...(Args), "Number of arguments should match Rank");
+    static_assert(Rank == 1u + sizeof...(Args), "Number of arguments should match Rank");
+    auto p = data_.get();
+    if (p == nullptr) { throw std::out_of_range("range"); }
     SizeType idx = structure_.index(midx, args...);
-    return data_.get()[idx];
+    return p[idx];
   }
 
   void fill(ConstReferenceType v)
@@ -384,13 +424,75 @@ public:
     std::fill(begin(), end(), v);
   }
 
-  Array<NonConstValueType, Rank> clone() const
+
+  //TODO BOUND CHECKING
+  template <typename SrcType>
+  Array& operator+=(Array<SrcType, Rank> const & arr)
   {
-    // TODO: Safety check??
-    Array<NonConstValueType, Rank> ret(structure_);
-    std::copy(cbegin(), cend(), ret.begin());
-    return ret;
+    if (shape() != arr.shape()) { throw std::length_error("Array::operator+=(). shapes don't match"); }
+    assert(shape() == arr.shape());
+    auto ip = arr.cbegin();
+    auto op = begin();
+    for (; op != end(); ++op, ++ip) { *op += *ip; }
+    return *this;
   }
+
+  template <typename SrcType>
+  Array& operator-=(Array<SrcType, Rank> const & arr)
+  {
+    if (shape() != arr.shape()) { throw std::length_error("Array::operator-=(). shapes don't match"); }
+    assert(shape() == arr.shape());
+    auto ip = arr.cbegin();  auto op = begin();
+    for (; op != end(); ++op, ++ip) { *op -= *ip; }
+    return *this;
+  }
+
+  template <typename SrcType>
+  Array& operator*=(Array<SrcType, Rank> const & arr)
+  {
+    if (shape() != arr.shape()) { throw std::length_error("Array::operator*=(). shapes don't match"); }
+    assert(shape() == arr.shape());
+    auto ip = arr.cbegin();  auto op = begin();
+    for (; op != end(); ++op, ++ip) { *op *= *ip; }
+    return *this;
+  }
+
+
+  template <typename SrcType>
+  Array& operator/=(Array<SrcType, Rank> const & arr)
+  {
+    if (shape() != arr.shape()) { throw std::length_error("Array::operator/=(). shapes don't match"); }
+    assert(shape() == arr.shape());
+    auto ip = arr.cbegin();  auto op = begin();
+    for (; op != end(); ++op, ++ip) { *op /= *ip; }
+    return *this;
+  }
+
+  // Use Template to be More Generic
+  Array& operator+=(ConstReferenceType v)
+  {
+    for (auto op = begin(); op != end(); ++op) { *op += v; }
+    return *this;
+  }
+
+  Array& operator-=(ConstReferenceType v)
+  {
+    for (auto op = begin(); op != end(); ++op) { *op -= v; }
+    return *this;
+  }
+
+  Array& operator*=(ConstReferenceType v)
+  {
+    for (auto op = begin(); op != end(); ++op) { *op *= v; }
+    return *this;
+  }
+
+  Array& operator/=(ConstReferenceType v)
+  {
+    for (auto op = begin(); op != end(); ++op) { *op /= v; }
+    return *this;
+  }
+
 
   const ArrayStructureType& structure() const { return structure_; }
 
@@ -400,8 +502,8 @@ public:
   //@{
   PointerType begin()                { return data_.get(); }
   PointerType end()                  { return data_.get() + length(); }
-  //ConstPointerType begin()   const { return data_.get(); }
-  //ConstPointerType end()     const { return data_.get() + length(); }
+  ConstPointerType begin()   const { return data_.get(); }
+  ConstPointerType end()     const { return data_.get() + length(); }
   ConstPointerType cbegin()    const { return data_.get(); }
   ConstPointerType cend()      const { return data_.get() + length(); }
   //@}
