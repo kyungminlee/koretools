@@ -276,6 +276,16 @@ log_determinant_abs(Array<T, 2> const & mat)
   return inplace::log_determinant_abs(m2);
 }
 
+
+template <typename T>
+inline typename std::enable_if<internal::true_if_match_1<T, complex128_t>::value, float64_t>::type
+log_determinant_abs_squared(Array<T, 2> const & mat)
+{
+  Array<complex128_t, 2> m2 = mat.clone();
+  return inplace::log_determinant_abs_squared(m2);
+}
+
+
 //@}
 
 //! \name eigensystem_symmetric

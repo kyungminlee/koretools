@@ -192,13 +192,37 @@ log_determinant_abs(Array<complex128_t, 2> & mat)
   assert(m == n);
   std::vector<lapack_int> ipiv(n);
   LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
-    reinterpret_cast<lapack_complex_double*>(mat.begin()), lda, ipiv.data());
+                 reinterpret_cast<lapack_complex_double*>(mat.begin()), lda,
+                 ipiv.data());
   float64_t log_det = 0.0;
   for (lapack_int i = 0; i < n; ++i) {
     log_det += std::log(std::abs(mat(i, i)));
   }
   return log_det;
 }
+
+inline float64_t
+log_determinant_abs_squared(Array<complex128_t, 2> & mat)
+{
+  lapack_int m = static_cast<lapack_int>(mat.shape(0));
+  lapack_int n = static_cast<lapack_int>(mat.shape(1));
+  lapack_int lda = static_cast<lapack_int>(mat.stride(0));
+  assert(static_cast<size_t>(m) == mat.shape(0));
+  assert(static_cast<size_t>(n) == mat.shape(1));
+  assert(static_cast<size_t>(lda) == mat.stride(0));
+  assert(m == n);
+  std::vector<lapack_int> ipiv(n);
+  LAPACKE_zgetrf(LAPACK_ROW_MAJOR, m, n,
+                 reinterpret_cast<lapack_complex_double*>(mat.begin()), lda,
+                 ipiv.data());
+  float64_t log_det_sq = 0.0;
+  for (lapack_int i = 0; i < n; ++i) {
+    log_det_sq += std::log(std::norm(mat(i, i)));
+    //std::cout << "LOG(" << i << ") : " << std::log(std::norm(mat(i, i))) << std::endl;
+  }
+  return log_det_sq;
+}
+
 
 
 inline lapack_int
