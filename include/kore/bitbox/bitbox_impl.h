@@ -51,7 +51,7 @@ template <> inline
 size_t bitcount<uint32_t>(uint32_t val, uint32_t mask)
 {
   static const uint32_t S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
-  static const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF, 0x0000FFFFL};
+  static const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF, 0x0000FFFF};
   uint32_t cnt = 0;
   val = val & mask;
   cnt = val - ((val >> 1) & B[0]);
@@ -62,14 +62,43 @@ size_t bitcount<uint32_t>(uint32_t val, uint32_t mask)
   return (size_t) cnt;
 }
 
+template <> inline
+size_t bitcount<uint16_t>(uint16_t val, uint16_t mask)
+{
+  static const uint16_t S[] = {1, 2, 4, 8}; // Magic Binary Numbers
+  static const uint16_t B[] = {0x5555u, 0x3333u, 0x0F0F, 0x00FF, 0xFFFF};
+  uint16_t cnt = 0x0;
+  val = val & mask;
+  cnt = val - ((val >> 1) & B[0]);
+  cnt = ((cnt >> S[1]) & B[1]) + (cnt & B[1]);
+  cnt = ((cnt >> S[2]) + cnt) & B[2];
+  cnt = ((cnt >> S[3]) + cnt) & B[3];
+  return (size_t) cnt;
+}
+
+template <> inline
+size_t bitcount<uint8_t>(uint8_t val, uint8_t mask)
+{
+  static const uint8_t S[] = {1, 2, 4}; // Magic Binary Numbers
+  static const uint8_t B[] = {0x55u, 0x33u, 0x0Fu, 0xFFu};
+  uint8_t cnt = 0;
+  val = val & mask;
+  cnt = val - ((val >> 1) & B[0]);
+  cnt = ((cnt >> S[1]) & B[1]) + (cnt & B[1]);
+  cnt = ((cnt >> S[2]) + cnt) & B[2];
+  return (size_t) cnt;
+}
+
 template <typename BitString> inline
 BitString makemask(size_t first, size_t last)
 {
   BitString res = ~BitString(0x0);
   size_t n = sizeof(BitString)*8;
   if (last < first) { std::swap(first, last); }
-  res = (res << (n-last-1)) >> (n-last-1);
-  res = (res >> first) << first;
+  res <<= n - last - 1;
+  res >>= n - last - 1;
+  res >>= first;
+  res <<= first;
   return res;
 }
 
