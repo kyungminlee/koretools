@@ -48,14 +48,14 @@ public:
 
   static_assert(Rank > 0, "Rank should be greater than 1");
 
-  ArrayStructure(ArrayStructure&& as) noexcept
+  ArrayStructure(ArrayStructure&& as) 
     : length_(as.length_)
     , shape_(as.shape_)    // move not necessary
     , stride_(as.stride_)
   {
   }
 
-  ArrayStructure(const ArrayStructure& as) noexcept
+  ArrayStructure(const ArrayStructure& as)
     : length_(as.length_)
     , shape_(as.shape_)
     , stride_(as.stride_)
@@ -64,10 +64,10 @@ public:
 
   //! Construct array structure with given shape.
   template <typename ... Args>
-  ArrayStructure(SizeType size, Args ... args) noexcept
+  ArrayStructure(SizeType size, Args ... args)
   { init_(size, args...); }
 
-  ArrayStructure& operator=(const ArrayStructure & as) noexcept
+  ArrayStructure& operator=(const ArrayStructure & as)
   {
     length_ = as.length_;
     shape_ = as.shape_;
@@ -139,10 +139,10 @@ public:
   }
 
 
-  SizeType length() const noexcept { return length_; }
-  SizeType size()   const noexcept { return length_; }
-  std::array<SizeType, Rank> shape()  const noexcept { return shape_; }
-  std::array<SizeType, Rank> stride() const noexcept { return stride_; }
+  SizeType length() const { return length_; }
+  SizeType size()   const { return length_; }
+  std::array<SizeType, Rank> shape()  const { return shape_; }
+  std::array<SizeType, Rank> stride() const { return stride_; }
   SizeType shape(size_t d)  const { assert(d < Rank); return shape_[d]; }
   SizeType stride(size_t d) const { assert(d < Rank); return stride_[d]; }
 
@@ -153,7 +153,7 @@ private:
   //! \param size
   //! \param args
   template <typename ... Args>
-  void init_(SizeType size, Args ... args) noexcept
+  void init_(SizeType size, Args ... args) 
   {
     init_(args...);
     static const std::size_t D = Rank - 1 - sizeof...(Args);
@@ -165,7 +165,7 @@ private:
 
   //! Initialize array structure.
   //! \param size
-  void init_(SizeType size) noexcept
+  void init_(SizeType size) 
   {
     static const std::size_t D = Rank - 1;
     static_assert(D + 1 == Rank, "last D+1 should match Rank");
@@ -230,7 +230,7 @@ public:
   //Array(Array const & arr) = delete;
 
 #if 0
-  Array(Array & arr) noexcept
+  Array(Array & arr) 
     : structure_(arr.structure_)
     , data_(arr.data_)
     , own_(arr.own_)
@@ -238,7 +238,7 @@ public:
   }
 #endif
 
-  Array(Array && arr) noexcept
+  Array(Array && arr) 
     : structure_(std::move(arr.structure_))
     , data_(std::move(arr.data_))
     , own_(arr.own_)
@@ -246,7 +246,7 @@ public:
   }
 
 #if 0
-  Array& operator=(Array & arr) noexcept
+  Array& operator=(Array & arr) 
   {
     structure_ = arr.structure_;
     data_ = arr.data_;
@@ -255,7 +255,7 @@ public:
   }
 #endif
 
-  Array& operator=(Array && arr) noexcept
+  Array& operator=(Array && arr) 
   {
     structure_ = std::move(arr.structure_);
     data_ = std::move(arr.data_);
@@ -294,7 +294,7 @@ public:
   template<typename ... Args>
   explicit Array(std::shared_ptr<ValueType> data,
                  bool own, 
-                 SizeType s, Args ... args) noexcept
+                 SizeType s, Args ... args) 
     : structure_(s, args...)
     , data_(data)
     , own_(own)
@@ -307,7 +307,7 @@ public:
   template<typename ... Args>
   explicit Array(std::shared_ptr<ValueType> data,
                  bool own,
-                 ArrayStructureType const & structure) noexcept
+                 ArrayStructureType const & structure) 
     : structure_(structure)
     , data_(data)
     , own_(own)
@@ -319,7 +319,7 @@ public:
   //!
   //! Use null deleter
   template <typename ... Args>
-  explicit Array(PointerType data, SizeType s, Args ... args) noexcept // MAYBE?
+  explicit Array(PointerType data, SizeType s, Args ... args) // MAYBE?
     : structure_(s, args...)
     , data_(data, [](void const *) {})
     , own_(false)
